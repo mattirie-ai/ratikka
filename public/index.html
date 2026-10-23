@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EAF4FA">
+<title>Seuraava ratikka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#EAF4FA; --sky2:#F8FBFD; --card:#FFFFFF; --ink:#1E2B45; --muted:#6B7A90; --rule:#E1E9F0;
+  --l1:#5BB8E8; --l1-soft:#E3F3FC; --l1-ink:#1D6E9C;
+  --l3:#34407A; --l3-soft:#E6E8F4; --l3-ink:#34407A;
+  --ok:#2FA36B; --warn:#C77A1A; --rail:#C9D6E2;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{
+  min-height:100vh; color:var(--ink);
+  background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 55%,#FFFFFF 100%);
+  font:400 16px/1.45 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+main{max-width:620px;margin:0 auto;padding:18px 16px 48px}
+
+/* ---------- Yläosa ---------- */
+.hero{position:relative;padding:6px 4px 0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{font:700 2.3rem/1 "Barlow Condensed","Arial Narrow",sans-serif;margin:6px 0 4px;letter-spacing:.01em}
+.sub{color:var(--muted);font-size:.95rem;margin:0}
+.clock{background:var(--card);border-radius:14px;padding:8px 14px;box-shadow:0 2px 10px rgba(30,43,69,.06);
+  font:700 1.7rem/1 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums}
+.scene{position:relative;height:118px;margin:10px -16px 6px;overflow:hidden}
+.scene svg.city{position:absolute;inset:auto 0 22px 0;width:100%;height:70px}
+.track{position:absolute;left:0;right:0;bottom:16px;height:6px;background:var(--rail);border-radius:3px}
+.track::after{content:"";position:absolute;left:0;right:0;top:8px;height:4px;
+  background:repeating-linear-gradient(90deg,var(--rail) 0 10px,transparent 10px 26px);opacity:.7}
+.wire{position:absolute;left:0;right:0;top:14px;height:1.5px;background:#B7C6D4}
+.tram{position:absolute;bottom:20px;left:0;width:230px;height:auto;animation:aja 16s linear infinite}
+@keyframes aja{from{transform:translateX(-260px)}to{transform:translateX(calc(100vw + 20px))}}
+@media (min-width:660px){@keyframes aja{from{transform:translateX(-260px)}to{transform:translateX(680px)}}}
+@media (prefers-reduced-motion: reduce){.tram{animation:none;left:24px}}
+
+/* ---------- Lähtökortit ---------- */
+.board{display:grid;gap:14px}
+.card{background:var(--card);border-radius:20px;padding:16px 18px 14px;
+  box-shadow:0 1px 2px rgba(30,43,69,.04),0 8px 24px rgba(30,43,69,.06);border:1px solid var(--rule)}
+.head{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center}
+.badge{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;color:#fff;
+  font:700 1.8rem/1 "Barlow Condensed","Arial Narrow",sans-serif}
+.l1 .badge{background:var(--l1)} .l3 .badge{background:var(--l3)}
+.from{font-weight:600;font-size:1.12rem;line-height:1.2}
+.to{color:var(--muted);font-size:.95rem}
+.to b{font-weight:600}
+.l1 .to b{color:var(--l1-ink)} .l3 .to b{color:var(--l3-ink)}
+.when{text-align:right}
+.mins{font:700 2.7rem/1 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums}
+.mins small{font-size:1.05rem;font-weight:600;margin-left:3px;color:var(--muted)}
+.mins.now{color:var(--ok)}
+.at{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;gap:6px;justify-content:flex-end;align-items:center;margin-top:2px}
+.dot{width:8px;height:8px;border-radius:50%;background:#B9C4D0;flex:none}
+.dot.rt{background:var(--ok);box-shadow:0 0 0 3px rgba(47,163,107,.18)}
+.msg{color:var(--warn);font-size:.92rem;max-width:200px}
+
+/* Lähestymisrata: pieni ratikka liikkuu kohti pysäkkiä 15 min ikkunassa */
+.approach{position:relative;height:30px;margin:12px 4px 2px}
+.approach .rail{position:absolute;left:0;right:14px;top:20px;height:4px;border-radius:2px}
+.l1 .rail{background:var(--l1-soft)} .l3 .rail{background:var(--l3-soft)}
+.approach .stop{position:absolute;right:4px;top:14px;width:16px;height:16px;border-radius:50%;background:#fff}
+.l1 .stop{border:4px solid var(--l1)} .l3 .stop{border:4px solid var(--l3)}
+.approach .mini{position:absolute;top:2px;width:44px;transform:translateX(-50%);transition:left 1s linear}
+.later{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:.85rem;font-variant-numeric:tabular-nums;padding:3px 10px;border-radius:999px;color:var(--ink)}
+.l1 .chip{background:var(--l1-soft)} .l3 .chip{background:var(--l3-soft)}
+.chip.label{background:none!important;color:var(--muted);padding-left:0}
+
+.status{margin:14px 6px 0;color:var(--muted);font-size:.86rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.legend{display:flex;align-items:center;gap:6px}
+
+/* ---------- Asetukset ---------- */
+details{margin-top:26px;background:var(--card);border-radius:16px;padding:14px 18px;border:1px solid var(--rule)}
+summary{cursor:pointer;font-weight:600}
+label{display:block;margin:12px 0 6px;font-size:.92rem}
+input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--rule);background:var(--sky2);color:var(--ink);font:inherit}
+button{margin-top:10px;padding:10px 18px;border:0;border-radius:10px;background:var(--l3);color:#fff;font:600 1rem "Barlow",sans-serif;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--l1);outline-offset:2px}
+.help{color:var(--muted);font-size:.88rem}
+a{color:var(--l1-ink)}
+.setup{background:var(--card);border-radius:20px;padding:20px;border:1px dashed var(--rail)}
+.setup p{margin:0 0 6px}
+#debug{white-space:pre-wrap;font-size:.8rem;margin-top:20px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="top">
+      <div>
+        <h1>Seuraava ratikka</h1>
+        <p class="sub">Tampere · linjat 1 ja 3</p>
+      </div>
+      <div class="clock" id="clock">--.--</div>
+    </div>
+    <div class="scene" aria-hidden="true">
+      <div class="wire"></div>
+      <svg class="city" viewBox="0 0 620 70" preserveAspectRatio="xMidYMax slice">
+        <g fill="#D7E6F1">
+          <rect x="10" y="30" width="46" height="40" rx="3"/><rect x="64" y="14" width="30" height="56" rx="3"/>
+          <rect x="102" y="38" width="60" height="32" rx="3"/><rect x="176" y="22" width="38" height="48" rx="3"/>
+          <rect x="224" y="6" width="22" height="64" rx="3"/><rect x="254" y="34" width="70" height="36" rx="3"/>
+          <rect x="336" y="18" width="34" height="52" rx="3"/><rect x="380" y="40" width="54" height="30" rx="3"/>
+          <rect x="446" y="10" width="28" height="60" rx="3"/><rect x="484" y="28" width="62" height="42" rx="3"/>
+          <rect x="556" y="20" width="40" height="50" rx="3"/>
+        </g>
+        <g fill="#E6F0F7"><circle cx="170" cy="58" r="14"/><circle cx="330" cy="60" r="12"/><circle cx="548" cy="58" r="13"/></g>
+      </svg>
+      <svg class="tram" viewBox="0 0 230 74">
+        <!-- virroitin -->
+        <path d="M96 14 L112 2 L128 14" fill="none" stroke="#34407A" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="104" y="12" width="20" height="4" rx="2" fill="#34407A"/>
+        <!-- kori: kolme moduulia -->
+        <rect x="4"   y="16" width="72"  height="44" rx="14" fill="#FFFFFF" stroke="#C9D6E2"/>
+        <rect x="80"  y="16" width="70"  height="44" rx="6"  fill="#FFFFFF" stroke="#C9D6E2"/>
+        <rect x="154" y="16" width="72"  height="44" rx="14" fill="#FFFFFF" stroke="#C9D6E2"/>
+        <!-- raidat -->
+        <rect x="4" y="46" width="222" height="6" fill="#5BB8E8"/>
+        <rect x="4" y="52" width="222" height="3" fill="#34407A"/>
+        <!-- ikkunat -->
+        <g fill="#CDEBFA">
+          <rect x="12" y="23" width="18" height="16" rx="4"/><rect x="34" y="23" width="16" height="16" rx="3"/><rect x="54" y="23" width="16" height="16" rx="3"/>
+          <rect x="86" y="23" width="16" height="16" rx="3"/><rect x="106" y="23" width="18" height="20" rx="3"/><rect x="128" y="23" width="16" height="16" rx="3"/>
+          <rect x="160" y="23" width="16" height="16" rx="3"/><rect x="180" y="23" width="16" height="16" rx="3"/><rect x="200" y="23" width="18" height="16" rx="4"/>
+        </g>
+        <!-- linjakilpi -->
+        <rect x="204" y="19" width="14" height="6" rx="2" fill="#34407A"/>
+        <!-- valot -->
+        <circle cx="220" cy="44" r="2.5" fill="#FFD66B"/>
+        <!-- pyörät -->
+        <g fill="#34407A"><circle cx="26" cy="64" r="6"/><circle cx="54" cy="64" r="6"/><circle cx="176" cy="64" r="6"/><circle cx="204" cy="64" r="6"/></g>
+        <g fill="#fff"><circle cx="26" cy="64" r="2"/><circle cx="54" cy="64" r="2"/><circle cx="176" cy="64" r="2"/><circle cx="204" cy="64" r="2"/></g>
+      </svg>
+      <div class="track"></div>
+    </div>
+  </section>
+
+  <div class="board" id="board" aria-live="polite"></div>
+  <div class="status">
+    <span id="updated">Haetaan…</span>
+    <span class="legend"><span class="dot rt"></span>reaaliaikainen <span class="dot" style="margin-left:8px"></span>aikataulu</span>
+  </div>
+  
+</main>
+
+<script>
+// ---- Reitit: muokkaa tarvittaessa. "mista" = lähtöpysäkki, "minne" = pysäkki, jonka kautta ratikan pitää kulkea.
+const REITIT = [
+  { linja: "3", mista: "Etelä-Hervanta", minne: "Sorin aukio" },
+  { linja: "3", mista: "Tulli",          minne: "Etelä-Hervanta" },
+  { linja: "1", mista: "Tulli",          minne: "Pyynikintori" },
+  { linja: "1", mista: "Tuulensuu",      minne: "Tays" },
+  { linja: "1", mista: "Pyynikintori",   minne: "Tays" },
+];
+const PAIVITYSVALI_MS = 30000;
+const IKKUNA_MIN = 15;   // lähestymisradan pituus minuutteina
+
+const $ = id => document.getElementById(id);
+let tulokset = REITIT.map(() => ({ lahdot: [], virhe: null }));
+let haettu = null;
+const DEBUG = location.hash === "#debug";
+const debugData = {};
+const nimi = s => (s || "").toLowerCase().normalize("NFC").replace(/\s+/g, " ").trim();
+const kello = d => d.toLocaleTimeString("fi-FI", { hour: "2-digit", minute: "2-digit" });
+
+const MINI = c => `<svg class="mini" viewBox="0 0 44 22" aria-hidden="true">
+  <rect x="1" y="3" width="42" height="15" rx="6" fill="#fff" stroke="${c}" stroke-width="1.6"/>
+  <rect x="1" y="12" width="42" height="3" fill="${c}"/>
+  <g fill="#CDEBFA"><rect x="5" y="6" width="7" height="5" rx="1.5"/><rect x="15" y="6" width="6" height="5" rx="1.5"/><rect x="24" y="6" width="6" height="5" rx="1.5"/><rect x="33" y="6" width="7" height="5" rx="1.5"/></g>
+  <circle cx="10" cy="19.5" r="2.2" fill="#34407A"/><circle cx="34" cy="19.5" r="2.2" fill="#34407A"/></svg>`;
+
+const valmis = () => true;
+const ohjeTeksti = () => "";
+async function haePysakki(pysakkinimi){
+  const r = await fetch("/api/lahdot?pysakki=" + encodeURIComponent(pysakkinimi));
+  let j = {};
+  try { j = await r.json(); } catch {}
+  if (!r.ok) throw new Error(j.virhe || "Haku epäonnistui (HTTP " + r.status + ").");
+  return j.pysakit || [];
+}
+
+function suodata(pysakit, reitti){
+  const nyt = Date.now() / 1000, lahdot = [];
+  for (const p of pysakit){
+    for (const st of p.stoptimesWithoutPatterns || []){
+      if (!st.trip || st.trip.route.shortName !== reitti.linja) continue;
+      const nimet = (st.trip.stoptimes || []).map(x => nimi(x.stop.name));
+      const i = nimet.findIndex(n => n.startsWith(nimi(reitti.mista)));
+      if (i < 0 || !nimet.slice(i + 1).some(n => n.includes(nimi(reitti.minne)))) continue;
+      const t = st.serviceDay + (st.realtime ? st.realtimeDeparture : st.scheduledDeparture);
+      if (t >= nyt - 30) lahdot.push({ t, rt: st.realtime });
+    }
+  }
+  return lahdot.sort((a, b) => a.t - b.t);
+}
+
+async function paivita(){
+  if (!valmis()){ piirra(); return; }
+  const vastaukset = {};
+  await Promise.all([...new Set(REITIT.map(r => r.mista))].map(async n => {
+    try { vastaukset[n] = { pysakit: await haePysakki(n) }; }
+    catch (e) { vastaukset[n] = { virhe: e.message }; }
+  }));
+  tulokset = REITIT.map(r => {
+    const v = vastaukset[r.mista];
+    if (v.virhe) return { lahdot: [], virhe: v.virhe };
+    if (!v.pysakit.length) return { lahdot: [], virhe: "Pysäkkiä " + r.mista + " ei löytynyt." };
+    return { lahdot: suodata(v.pysakit, r), virhe: null };
+  });
+  haettu = new Date();
+  piirra(); piirraDebug();
+}
+
+function piirra(){
+  const board = $("board");
+  if (!valmis()){ board.innerHTML = ohjeTeksti(); return; }
+  const nyt = Date.now() / 1000;
+  board.innerHTML = REITIT.map((r, idx) => {
+    const tul = tulokset[idx];
+    const tulevat = tul.lahdot.filter(l => l.t >= nyt - 30);
+    const eka = tulevat[0];
+    const vari = r.linja === "1" ? "#5BB8E8" : "#34407A";
+    let oikea, rata = "";
+    if (tul.virhe) oikea = `<div class="msg">${tul.virhe}</div>`;
+    else if (!eka) oikea = `<div class="msg">${haettu ? "Ei lähtöjä lähiaikoina" : "Haetaan…"}</div>`;
+    else {
+      const sek = Math.max(0, eka.t - nyt), min = Math.floor(sek / 60);
+      oikea = `<div class="mins ${min === 0 ? "now" : ""}">${min === 0 ? "Nyt" : min + "<small>min</small>"}</div>
+               <div class="at"><span class="dot ${eka.rt ? "rt" : ""}"></span>${kello(new Date(eka.t * 1000))}</div>`;
+      const osuus = Math.min(1, sek / (IKKUNA_MIN * 60));
+      const vasen = 6 + (1 - osuus) * 82;   // % radan pituudesta
+      rata = `<div class="approach" title="Ratikan arvioitu etäisyys pysäkistä">
+        <div class="rail"></div><div class="stop"></div>
+        <div style="position:absolute;left:${vasen}%;top:0">${MINI(vari)}</div></div>`;
+    }
+    const seur = tulevat.slice(1, 4).map(l => `<span class="chip">${kello(new Date(l.t * 1000))}</span>`).join("");
+    return `<article class="card l${r.linja}">
+      <div class="head">
+        <div class="badge" aria-label="Linja ${r.linja}">${r.linja}</div>
+        <div><div class="from">${r.mista}</div><div class="to">kohti <b>${r.minne}</b></div></div>
+        <div class="when">${oikea}</div>
+      </div>
+      ${rata}
+      ${seur ? `<div class="later"><span class="chip label">Seuraavat</span>${seur}</div>` : ""}
+    </article>`;
+  }).join("");
+  $("updated").textContent = haettu ? "Päivitetty " + haettu.toLocaleTimeString("fi-FI") : "Haetaan…";
+}
+
+function piirraDebug(){
+  if (!DEBUG) return;
+  let el = $("debug");
+  if (!el){ el = document.createElement("pre"); el.id = "debug"; document.querySelector("main").appendChild(el); }
+  el.textContent = Object.entries(debugData).map(([n, st]) =>
+    "Haku: " + n + " (" + st.length + " pysäkkiä)\n" + st.slice(0, 15).map(x => "  " + JSON.stringify(x)).join("\n")).join("\n\n");
+}
+
+function tikitys(){ $("clock").textContent = kello(new Date()); piirra(); }
+
+tikitys(); paivita();
+setInterval(tikitys, 1000);
+setInterval(paivita, PAIVITYSVALI_MS);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) paivita(); });
+</script>
+</body>
+</html>
