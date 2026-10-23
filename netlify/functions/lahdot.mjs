@@ -3,7 +3,7 @@
 const ENDPOINT = "https://api.digitransit.fi/routing/v2/waltti/gtfs/v1";
 
 // Vain nämä pysäkit sallitaan, jotta funktiota ei voi käyttää yleisenä välityspalvelimena.
-const SALLITUT = ["etelä-hervanta", "tulli", "tuulensuu", "pyynikintori"];
+const SALLITUT = ["etelä-hervanta", "tulli", "tuulensuu", "pyynikintori","hervantajärvi"];
 
 const KYSELY = `query($n:String!){
   stops(name:$n){
