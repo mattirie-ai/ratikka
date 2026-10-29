@@ -33,6 +33,7 @@ export default async (req) => {
   try {
     r = await fetch(ENDPOINT, {
       method: "POST",
+      signal: AbortSignal.timeout(8000),
       headers: { "Content-Type": "application/json", "digitransit-subscription-key": avain },
       body: JSON.stringify({ query: KYSELY, variables: { n: pysakki } }),
     });
@@ -42,7 +43,9 @@ export default async (req) => {
   if (r.status === 401 || r.status === 403) return json({ virhe: "Rajapinta-avain ei kelpaa." }, 502);
   if (!r.ok) return json({ virhe: "Haku epäonnistui (HTTP " + r.status + ")." }, 502);
 
-  const j = await r.json();
+  let j;
+  try { j = await r.json(); }
+  catch { return json({ virhe: "Digitransitin vastausta ei voitu lukea." }, 502); }
   if (j.errors) return json({ virhe: j.errors[0].message }, 502);
 
   const norm = (x) => (x || "").toLowerCase().normalize("NFC").replace(/\s+/g, " ").trim();
